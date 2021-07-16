@@ -1,11 +1,30 @@
 import random
+from collections import Counter
 
 
 PATH = "loss_cases.txt"  # hex-string
-PACKET_SIZE = 128
-N_PACKET = 100
+PACKET_SIZE: int = 128  # <= 4096
+N_PACKET: int = 153  # <= 153
+REPEAT: int = 2  # >= 1
 RX_ADDR = ("127.0.0.1", 8001)
 TX_ADDR = ("127.0.0.1", 8000)
+RX_TIMEOUT = 10
+
+
+class Multiset(Counter):
+    def remove(self, item):
+        if item in self:
+            self[item] -= 1
+            if self[item] == 0:
+                del self[item]
+        else:
+            raise ValueError
+
+    def add(self, item):
+        self[item] += 1
+
+    def __len__(self):
+        return sum(self.values())
 
 
 def generate_cases(path=PATH):

@@ -1,7 +1,8 @@
 import socket
 import cv2
 import numpy as np
-from typing import Tuple, List
+from typing import Tuple, List, Optional
+
 from frame import Frame, FragFlag
 
 
@@ -13,19 +14,25 @@ class Transceiver:
     """
     使用UDP对图片进行分片传输
     """
-    def __init__(self, local: Tuple[str, int], *, bufsize=1024):
+    def __init__(self, local: Tuple[str, int], *, bufsize=4096):
         self.local = local
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self._socket.bind(local)
+        self.__socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.__socket.bind(local)
         self.bufsize = bufsize
 
+    def set_timeout(self, t: Optional[float]):
+        self.__socket.settimeout(t)
+
+    def set_blocking(self, flag: Optional[bool]):
+        self.set_blocking(flag)
+
     def send(self, remote: Tuple[str, int], data: bytes):
-        self._socket.sendto(data, remote)
+        self.__socket.sendto(data, remote)
 
     def recv(self, remote: Tuple[str, int]):
         """blocking receive"""
         while True:
-            data, addr = self._socket.recvfrom(self.bufsize)
+            data, addr = self.__socket.recvfrom(self.bufsize)
             if addr == remote:
                 return data
 
@@ -43,7 +50,7 @@ class Transceiver:
             frames = [Frame(0xff, len(data), 0, FragFlag.NOT, data)]
         # send
         for frame in frames:
-            self._socket.sendto(frame.to_bytes(), remote)
+            self.__socket.sendto(frame.to_bytes(), remote)
 
     @staticmethod
     def fragmentation(data: bytes) -> List[Frame]:
@@ -67,7 +74,7 @@ class Transceiver:
         encoded = b""
         state = 'start'
         while state != 'end':
-            data, addr = self._socket.recvfrom(self.bufsize)
+            data, addr = self.__socket.recvfrom(self.bufsize)
             # skip data from other address
             if addr != remote:
                 continue

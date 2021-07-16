@@ -130,3 +130,6 @@ dmypy.json
 
 # Pycharm
 .idea/
+
+# cases
+loss_cases.txt
