@@ -19,6 +19,16 @@ class Transceiver:
         self._socket.bind(local)
         self.bufsize = bufsize
 
+    def send(self, remote: Tuple[str, int], data: bytes):
+        self._socket.sendto(data, remote)
+
+    def recv(self, remote: Tuple[str, int]):
+        """blocking receive"""
+        while True:
+            data, addr = self._socket.recvfrom(self.bufsize)
+            if addr == remote:
+                return data
+
     def send_image(self, remote: Tuple[str, int], image_path: str):
         # encode image
         image = cv2.imread(image_path)
