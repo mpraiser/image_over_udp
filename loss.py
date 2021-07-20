@@ -1,55 +1,60 @@
 import random
-from collections import Counter
+from typing import List
+from utils import hex_str
 
 
 PATH = "loss_cases.txt"  # hex-string
-PACKET_SIZE: int = 128  # <= 4096
-N_PACKET: int = 153  # <= 153
+PACKET_SIZE: int = 128  # >=1, <= 4096
+N_PACKET: int = 999  # >= 1, < 256 ** 256
 REPEAT: int = 2  # >= 1
-RX_ADDR = ("127.0.0.1", 8001)
-TX_ADDR = ("127.0.0.1", 8000)
-RX_TIMEOUT = 10
 
 
-class Multiset(Counter):
-    def remove(self, item):
-        if item in self:
-            self[item] -= 1
-            if self[item] == 0:
-                del self[item]
-        else:
-            raise ValueError
+def generate_cases(path: str,
+                   packet_size: int,
+                   n_packet: int,
+                   *,
+                   random_size=False):
+    """
+    Args:
+        path: filename
+        packet_size: (max) packet_size of each packet
+        n_packet: number of packet to generate
+        random_size: if packet size ranges from 1 to packet_size
+    """
+    assert 1 <= packet_size <= 4096
+    assert 1 <= n_packet <= 256 ** 256
 
-    def add(self, item):
-        self[item] += 1
-
-    def __len__(self):
-        return sum(self.values())
-
-
-def generate_cases(path=PATH):
     with open(path, "w") as fp:
         for i in range(N_PACKET):
-            packet = [random.randint(0, 255) for _ in range(PACKET_SIZE-1)]
-            packet = [i] + packet
+            packet = []
+            seq = i
+            count = 0
+            while seq > 0:
+                seq, tmp = divmod(seq, 256)
+                packet = [tmp] + packet
+                count += 1
+            packet = [count] + packet
+            size = random.randint(1, packet_size) if random_size else packet_size
+            packet += [random.randint(0, 255) for _ in range(size - 1)]
             fp.write(" ".join((f"{item:02x}".upper() for item in packet)))
             fp.write("\n")
 
 
 def loaded_cases(path=PATH):
+    """simple generator function to load packets"""
     with open(path, "r") as fp:
         for line in fp:
             packet: bytes = bytes.fromhex(line)
             yield packet
 
 
-def hex_str(packet: bytes) -> str:
-    """convert bytes into hex-string"""
-    return packet.hex(sep=" ").upper()
+def load_cases(path=PATH) -> List[bytes]:
+    return list(loaded_cases(path))
 
 
 if __name__ == "__main__":
-    generate_cases()
-    for p in loaded_cases():
+    FILENAME = PATH
+    generate_cases(FILENAME, PACKET_SIZE, N_PACKET, random_size=True)
+    for p in load_cases(PATH):
         # print(p)
-        print(p.hex(sep=" ").upper())
+        print(hex_str(p))
