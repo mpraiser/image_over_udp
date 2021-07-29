@@ -23,17 +23,18 @@ class FragFlag(IntEnum):
 
 
 class Frame:
-    BYTE_ORDER = 'little'
-    MAX_PAYLOAD_LEN = 256 - 4
+    BYTE_ORDER = 'big'
+    HEADER_COST = 1 + 2 + 2 + 1
+    MAX_PAYLOAD_LEN = 2048 - HEADER_COST
 
-    def __init__(self, header: int, payload_len: int, seq: int, frag_flag: FragFlag, data: bytes):
-        assert header == 0xff
+    def __init__(self, frame_type: int, payload_len: int, seq: int, frag_flag: FragFlag, data: bytes):
+        assert frame_type == 0xff
         assert 2 <= payload_len <= Frame.MAX_PAYLOAD_LEN
-        assert 0 <= seq < 256
+        assert 0 <= seq < 2 ** 16
         assert frag_flag in FragFlag
         assert 0 <= len(data) <= Frame.MAX_PAYLOAD_LEN
 
-        self.header = header  # 0xff
+        self.frame_type = frame_type  # 0xff
         self.payload_len = payload_len
         self.seq = seq
         self.frag_flag = frag_flag
@@ -44,22 +45,20 @@ class Frame:
         return Frame(**data)
 
     @staticmethod
-    def from_bytes(data):
-        header = int(data[0])
-        if header != 0xff:
-            raise ValueError("Invalid header")
-        payload_len = int(data[1])
-        if len(data) < 4 + payload_len:
+    def from_bytes(data: bytes):
+        frame_type = int(data[0])
+        payload_len = int(data[1:1+2].hex(), base=16)
+        if len(data) < Frame.HEADER_COST + payload_len:
             raise ValueError("Invalid length of payload")
-        seq = int(data[2])
-        frag_flag = FragFlag.check(data[3])
-        data = data[4:4+payload_len]
-        return Frame(header, payload_len, seq, frag_flag, data)
+        seq = int(data[3:3+2].hex(), base=16)
+        frag_flag = FragFlag.check(data[5])
+        data = data[6:6+payload_len]
+        return Frame(frame_type, payload_len, seq, frag_flag, data)
 
     def to_bytes(self):
-        result = self.header.to_bytes(1, self.BYTE_ORDER) \
-                 + self.payload_len.to_bytes(1, self.BYTE_ORDER) \
-                 + self.seq.to_bytes(1, self.BYTE_ORDER) \
+        result = self.frame_type.to_bytes(1, self.BYTE_ORDER) \
+                 + self.payload_len.to_bytes(2, self.BYTE_ORDER) \
+                 + self.seq.to_bytes(2, self.BYTE_ORDER) \
                  + self.frag_flag.value.to_bytes(1, self.BYTE_ORDER) \
                  + self.data
 
@@ -67,7 +66,7 @@ class Frame:
 
     def to_dict(self):
         return {
-            "header": self.header,
+            "frame_type": self.frame_type,
             "payload_len": self.payload_len,
             "seq": self.seq,
             "frag_flag": self.frag_flag,
@@ -76,7 +75,7 @@ class Frame:
 
 
 if __name__ == "__main__":
-    f1 = Frame.from_bytes(b"\xff\x03\x00\x00\x01\x02\x03")
+    f1 = Frame.from_bytes(b"\xff\x00\x03\x00\x00\x00\x01\x02\x03")
     print(f1.to_dict())
     print(f1.to_bytes())
 

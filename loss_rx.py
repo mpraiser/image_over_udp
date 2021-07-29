@@ -6,7 +6,7 @@ import socket
 from typing import Tuple
 
 import loss
-from loss import loaded_cases
+from loss import load_cases
 from utils import Multiset, hex_str
 from transceiver import Transceiver
 
@@ -24,8 +24,9 @@ def loss_rx(
 
     # expected sent packets
     packets_send = Multiset()
+    cases = load_cases(path)
     for _ in range(repeat):
-        for packet in loaded_cases(path):
+        for packet in cases:
             packets_send.add(packet)
     count_send = len(packets_send)
 

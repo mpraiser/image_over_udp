@@ -1,9 +1,10 @@
 import socket
 import cv2
 import numpy as np
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Optional, Callable
 
 from frame import Frame, FragFlag
+from utils import delay_ns
 
 
 class FragFailure(Exception):
@@ -36,7 +37,27 @@ class Transceiver:
             if addr == remote:
                 return data
 
-    def send_image(self, remote: Tuple[str, int], image_path: str):
+    def send_protocol(self, remote: Tuple[str, int], data: bytes, *, interval=0):
+        """send with fragmentation according to protocol"""
+        if len(data) > Frame.MAX_PAYLOAD_LEN:
+            frames = self.fragmentation(data)
+        else:
+            frames = [Frame(0xff, len(data), 0, FragFlag.NOT, data)]
+        # send
+        frames = [_.to_bytes() for _ in frames]
+
+        print("Frames:")
+        for frame in frames:
+            print(frame.hex(" ").upper())
+
+        print("Start transmitting...")
+        interval_ns = int(interval * 1e9)
+        for frame in frames:
+            if interval > 0:
+                delay_ns(interval_ns)
+            self.__socket.sendto(frame, remote)
+
+    def send_image(self, remote: Tuple[str, int], image_path: str, *, interval=0):
         # encode image
         image = cv2.imread(image_path)
         flag, content = cv2.imencode(".jpg", image)
@@ -44,13 +65,7 @@ class Transceiver:
             raise Exception
         data = content.tostring()
         # fragmentation or not
-        if len(data) > Frame.MAX_PAYLOAD_LEN:
-            frames = self.fragmentation(data)
-        else:
-            frames = [Frame(0xff, len(data), 0, FragFlag.NOT, data)]
-        # send
-        for frame in frames:
-            self.__socket.sendto(frame.to_bytes(), remote)
+        self.send_protocol(remote, data, interval=interval)
 
     @staticmethod
     def fragmentation(data: bytes) -> List[Frame]:
@@ -66,20 +81,21 @@ class Transceiver:
                 frag_flag = FragFlag.END
             else:
                 frag_flag = FragFlag.CONTINUE
-            frame = Frame(0xff, len(data), 0, frag_flag, data)
+            frame = Frame(0xff, len(data), seq, frag_flag, data)
             frames.append(frame)
         return frames
 
-    def recv_image(self, remote: Tuple[str, int]) -> np.array:
+    @staticmethod
+    def reassembly(buffer: List[Frame]) -> bytes:
         encoded = b""
         state = 'start'
+        buffer = iter(buffer)
         while state != 'end':
-            data, addr = self.__socket.recvfrom(self.bufsize)
-            # skip data from other address
-            if addr != remote:
-                continue
-            # print("received:", data)
-            frame = Frame.from_bytes(data)
+            try:
+                frame = next(buffer)
+            except StopIteration:
+                raise FragFailure
+
             if state == "start":
                 if frame.frag_flag is FragFlag.NOT:
                     encoded = frame.data
@@ -99,6 +115,57 @@ class Transceiver:
                 else:
                     raise FragFailure
 
+        return encoded
+
+    def listen_protocol(
+            self,
+            remote: Tuple[str, int],
+            *,
+            callback: Callable[[int, bytes], None],
+            timeout=10):
+        self.set_timeout(timeout)
+
+        buffer = []
+        count = 0
+        n_frag = None
+
+        def init_buffer():
+            nonlocal buffer, n_frag
+            buffer = []
+            n_frag = None
+
+        def callback_warp(buf: List[Frame]):
+            nonlocal count
+            full_data = self.reassembly(buf)
+            callback(count, full_data)
+
+        while True:
+            try:
+                data, addr = self.__socket.recvfrom(self.bufsize)
+                if addr != remote:
+                    continue
+
+                frame = Frame.from_bytes(data)
+                # if non-frag, directly callback
+                if frame.frag_flag is FragFlag.NOT:
+                    callback_warp([frame])
+                    count += 1
+                else:
+                    buffer.append(frame)
+                    if frame.frag_flag is FragFlag.END:
+                        n_frag = frame.seq + 1
+
+                if n_frag and len(buffer) >= n_frag:
+                    buffer.sort(key=lambda x: x.seq)
+                    callback_warp(buffer)
+                    count += 1
+                    init_buffer()
+
+            except socket.timeout:
+                return
+
+    @staticmethod
+    def decode_image(encoded: bytes) -> np.array:
         arr = np.frombuffer(encoded, dtype=np.uint8)
         image = cv2.imdecode(arr, cv2.IMREAD_COLOR)
         return image
