@@ -1,6 +1,4 @@
 import socket
-import cv2
-import numpy as np
 from typing import Tuple, List, Optional, Callable
 
 from frame import Frame, FragFlag
@@ -14,6 +12,7 @@ class FragFailure(Exception):
 class Transceiver:
     """
     使用UDP对图片进行分片传输
+    内置私有分片传输协议
     """
     def __init__(self, local: Tuple[str, int], *, bufsize=4096):
         self.local = local
@@ -46,26 +45,17 @@ class Transceiver:
         # send
         frames = [_.to_bytes() for _ in frames]
 
-        print("Frames:")
-        for frame in frames:
-            print(frame.hex(" ").upper())
+        # print("Frames:")
+        # for frame in frames:
+        #     print(frame.hex(" ").upper())
 
-        print("Start transmitting...")
+        print("Start transmitting.")
         interval_ns = int(interval * 1e9)
         for frame in frames:
             if interval > 0:
                 delay_ns(interval_ns)
             self.__socket.sendto(frame, remote)
-
-    def send_image(self, remote: Tuple[str, int], image_path: str, *, interval=0):
-        # encode image
-        image = cv2.imread(image_path)
-        flag, content = cv2.imencode(".jpg", image)
-        if not flag:
-            raise Exception
-        data = content.tostring()
-        # fragmentation or not
-        self.send_protocol(remote, data, interval=interval)
+        print("End of transmitting.")
 
     @staticmethod
     def fragmentation(data: bytes) -> List[Frame]:
@@ -122,7 +112,7 @@ class Transceiver:
             remote: Tuple[str, int],
             *,
             callback: Callable[[int, bytes], None],
-            timeout=10):
+            timeout=50):
         self.set_timeout(timeout)
 
         buffer = []
@@ -163,9 +153,3 @@ class Transceiver:
 
             except socket.timeout:
                 return
-
-    @staticmethod
-    def decode_image(encoded: bytes) -> np.array:
-        arr = np.frombuffer(encoded, dtype=np.uint8)
-        image = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-        return image

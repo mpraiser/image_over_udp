@@ -1,19 +1,12 @@
 import random
 from typing import List
-from utils import hex_str
 
 
-PATH = "loss_cases.txt"  # hex-string
-PACKET_SIZE: int = 128  # >=1, <= 4096
-N_PACKET: int = 999  # >= 1, < 256 ** 256
-REPEAT: int = 2  # >= 1
-
-
-def generate_cases(path: str,
-                   packet_size: int,
-                   n_packet: int,
-                   *,
-                   random_size=False):
+def generate(path: str,
+             packet_size: int,
+             n_packet: int,
+             *,
+             random_size=False):
     """
     Args:
         path: filename
@@ -25,7 +18,7 @@ def generate_cases(path: str,
     assert 1 <= n_packet <= 256 ** 256
 
     with open(path, "w") as fp:
-        for i in range(N_PACKET):
+        for i in range(n_packet):
             packet = []
             seq = i
             count = 0
@@ -40,7 +33,7 @@ def generate_cases(path: str,
             fp.write("\n")
 
 
-def loaded_cases(path=PATH):
+def loaded(path: str):
     """simple generator function to load packets"""
     with open(path, "r") as fp:
         for line in fp:
@@ -48,13 +41,5 @@ def loaded_cases(path=PATH):
             yield packet
 
 
-def load_cases(path=PATH) -> List[bytes]:
-    return list(loaded_cases(path))
-
-
-if __name__ == "__main__":
-    FILENAME = PATH
-    generate_cases(FILENAME, PACKET_SIZE, N_PACKET, random_size=True)
-    for p in load_cases(PATH):
-        # print(p)
-        print(hex_str(p))
+def load(path: str) -> List[bytes]:
+    return list(loaded(path))
