@@ -1,18 +1,9 @@
 import socket
 from typing import Tuple, Optional
 
-from topic.test_loss.dataset import load
+from topic.test_loss.dataset import preprocess_dataset
 from transceiver import Transceiver
 from utils import Multiset, hex_str
-
-
-def preprocess_dataset(path: str, repeat: int) -> Multiset:
-    dataset = Multiset()
-    cases = load(path)
-    for _ in range(repeat):
-        for packet in cases:
-            dataset.add(packet)
-    return dataset
 
 
 def receive_for_dataset(
@@ -22,9 +13,9 @@ def receive_for_dataset(
         *,
         timeout: Optional[float] = None,
         repeat: int = 1,
-        ):
+        ) -> Multiset:
     """
-    receive expected data in dataset
+    receive expected data in dataset, return dataset which contains packet not received.
 
     :param local:
     :param remote:
@@ -67,3 +58,4 @@ def receive_for_dataset(
     loss_rate = (count_send - count_correct) / count_send * 100
     print(f"packet send = {count_send}, packet received = {count_recv}, "
           f"correct packet = {count_correct}, loss = {loss_rate:.2f} %")
+    return dataset

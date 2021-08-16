@@ -8,4 +8,5 @@ if __name__ == "__main__":
     INTERVAL = 0  # seconds
     RANDOM_TX = False  # 是否主动随机丢弃一些包（50%概率）
 
-    test_loss.transmit_dataset(LOCAL, REMOTE, PATH, interval=INTERVAL, repeat=REPEAT, random_tx=RANDOM_TX)
+    lost_dataset = test_loss.transmit_dataset(
+        LOCAL, REMOTE, PATH, interval=INTERVAL, repeat=REPEAT, random_tx=RANDOM_TX)

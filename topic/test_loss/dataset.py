@@ -1,5 +1,8 @@
 import random
+import matplotlib.pyplot as plt
 from typing import List
+
+from utils import Multiset
 
 
 def generate(path: str,
@@ -43,3 +46,27 @@ def loaded(path: str):
 
 def load(path: str) -> List[bytes]:
     return list(loaded(path))
+
+
+def preprocess_dataset(path: str, repeat: int) -> Multiset:
+    dataset = Multiset()
+    cases = load(path)
+    for _ in range(repeat):
+        for packet in cases:
+            dataset.add(packet)
+    return dataset
+
+
+def plot_received(sent: Multiset, lost: Multiset):
+    y = [sent[item] - lost[item] for item in sent]
+    x = [i for i in range(sent.n_items())]
+    for i in range(len(x)):
+        if y[i] > 0:
+            plt.scatter(x[i], y[i], s=1, c='black', marker='o')
+        else:
+            plt.scatter(x[i], y[i], s=1, c='red', marker='x')
+    # plt.plot(x, y)
+    plt.ylim([-1, max(y) + 1])
+    plt.xlabel("Index")
+    plt.ylabel("Packet received")
+    plt.show()

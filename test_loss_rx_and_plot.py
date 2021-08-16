@@ -8,5 +8,6 @@ if __name__ == "__main__":
     REPEAT = 1  # 将整个dataset循环发送，务必保证与另一端一致
     TIMEOUT = 5  # 接收超时等待时间, None或者一个数，但不能为0；None表示会一直阻塞
 
-    test_loss.receive_for_dataset(LOCAL, REMOTE, PATH, timeout=TIMEOUT, repeat=REPEAT)
-
+    lost = test_loss.receive_for_dataset(LOCAL, REMOTE, PATH, timeout=TIMEOUT, repeat=REPEAT)
+    sent = test_loss.dataset.preprocess_dataset(PATH, REPEAT)
+    test_loss.plot_received(sent, lost)

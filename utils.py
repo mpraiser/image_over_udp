@@ -4,11 +4,12 @@ from collections import Counter
 
 
 class Multiset(Counter):
+    def __init__(self):
+        super().__init__()
+
     def remove(self, item):
-        if item in self:
+        if item in self and self[item] > 0:
             self[item] -= 1
-            if self[item] == 0:
-                del self[item]
         else:
             raise ValueError
 
@@ -16,7 +17,20 @@ class Multiset(Counter):
         self[item] += 1
 
     def __len__(self):
+        """sum of total count"""
         return sum(self.values())
+
+    def n_items(self):
+        """number of different items"""
+        count = 0
+        for _ in self:
+            count += 1
+        return count
+
+    def __sub__(self, other):
+        for item in other:
+            self.remove(item)
+        return self
 
 
 def hex_str(packet: bytes) -> str:
