@@ -2,7 +2,7 @@ import random
 import time
 from typing import Tuple, List
 
-from topic.test_loss.dataset import loaded
+from .dataset import load
 from transceiver import Transceiver
 from utils import delay_ns
 
@@ -20,7 +20,7 @@ def transmit_dataset(
     # prepare sending data
     dataset: List[bytes] = []
     for _ in range(repeat):
-        for packet in loaded(path):
+        for packet in load(path):
             if (not random_tx) or random.randint(0, 1) == 1:
                 dataset.append(packet)
     interval_ns = int(interval * 1e9)

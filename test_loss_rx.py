@@ -1,4 +1,4 @@
-import topic.test_loss as test_loss
+from topic import test_loss
 
 
 if __name__ == "__main__":
@@ -9,4 +9,3 @@ if __name__ == "__main__":
     TIMEOUT = 5  # 接收超时等待时间, None或者一个数，但不能为0；None表示会一直阻塞
 
     test_loss.receive_for_dataset(LOCAL, REMOTE, PATH, timeout=TIMEOUT, repeat=REPEAT)
-

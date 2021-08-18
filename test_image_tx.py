@@ -1,4 +1,4 @@
-import topic.test_image as test_image
+from topic import test_image
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-import topic.test_loss as test_loss
+from topic import test_loss
 
 
 if __name__ == "__main__":

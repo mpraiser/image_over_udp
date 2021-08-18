@@ -1,7 +1,7 @@
 import socket
 from typing import Tuple, Optional
 
-from topic.test_loss.dataset import preprocess_dataset
+from .dataset import preprocess_dataset
 from transceiver import Transceiver
 from utils import Multiset, hex_str
 

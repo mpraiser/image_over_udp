@@ -29,11 +29,11 @@ class Transceiver:
     def send(self, remote: Tuple[str, int], data: bytes):
         self.__socket.sendto(data, remote)
 
-    def recv(self, remote: Tuple[str, int]):
+    def recv(self, remote: Optional[Tuple[str, int]]):
         """blocking receive"""
         while True:
             data, addr = self.__socket.recvfrom(self.bufsize)
-            if addr == remote:
+            if addr is None or addr == remote:
                 return data
 
     def send_protocol(self, remote: Tuple[str, int], data: bytes, *, interval=0):

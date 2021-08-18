@@ -8,7 +8,7 @@ if __name__ == "__main__":
     N_PACKET: int = 999  # 总共生成多少个包，[1, 256^256)个
     RANDOM_SIZE: bool = True  # 是否随机长度，如果为True，每个包的长度范围是 [1, PACKET_SIZE]
 
-    dataset.generate(PATH, PACKET_SIZE, N_PACKET, random_size=RANDOM_SIZE)
-    for p in dataset.load(PATH):
+    dataset.generate_file(PATH, PACKET_SIZE, N_PACKET, random_size=RANDOM_SIZE)
+    for p in dataset.loaded(PATH):
         print(hex_str(p))
     print(f"Dataset generated in {PATH}")

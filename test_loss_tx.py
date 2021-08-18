@@ -1,4 +1,5 @@
-import topic.test_loss as test_loss
+from topic import test_loss
+
 
 if __name__ == "__main__":
     LOCAL = ("127.0.0.1", 8000)
@@ -9,4 +10,5 @@ if __name__ == "__main__":
     RANDOM_TX = False  # 是否主动随机丢弃一些包（50%概率）
 
     lost_dataset = test_loss.transmit_dataset(
-        LOCAL, REMOTE, PATH, interval=INTERVAL, repeat=REPEAT, random_tx=RANDOM_TX)
+        LOCAL, REMOTE, PATH, interval=INTERVAL, repeat=REPEAT, random_tx=RANDOM_TX
+    )
