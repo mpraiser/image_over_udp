@@ -1,4 +1,4 @@
-from topic import test_echo
+from topic import test_ul_dl_delay
 
 
 if __name__ == "__main__":
@@ -9,7 +9,6 @@ if __name__ == "__main__":
     RANDOM_SIZE: bool = True  # 是否随机长度，如果为True，每个包的长度范围是 [1, PACKET_SIZE]
     TIMEOUT = 5  # 接收超时等待时间, None或者一个数，但不能为0；None表示会一直阻塞
     INTERVAL = 0.1  # seconds
-
-    master = test_echo.TestEchoLossMasterSync(
-        LOCAL, PACKET_SIZE, N_PACKET, random_size=RANDOM_SIZE, timeout=TIMEOUT)
-    master.start(REMOTE, interval=INTERVAL)
+    test_ul_dl_delay.run_master(
+        LOCAL, REMOTE, PACKET_SIZE, N_PACKET, random_size=RANDOM_SIZE, interval=INTERVAL
+    )
