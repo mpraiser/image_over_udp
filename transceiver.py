@@ -30,10 +30,13 @@ class Transceiver:
         self.__socket.sendto(data, remote)
 
     def recv(self, remote: Optional[Tuple[str, int]]):
-        """blocking receive"""
+        """
+        blocking receive
+        :param remote: if None, will receive from whichever address
+        """
         while True:
             data, addr = self.__socket.recvfrom(self.bufsize)
-            if addr is None or addr == remote:
+            if remote is None or addr == remote:
                 return data
 
     def send_protocol(self, remote: Tuple[str, int], data: bytes, *, interval=0):

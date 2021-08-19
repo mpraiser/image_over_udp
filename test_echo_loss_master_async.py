@@ -10,6 +10,6 @@ if __name__ == "__main__":
     TIMEOUT = 5  # 接收超时等待时间, None或者一个数，但不能为0；None表示会一直阻塞
     INTERVAL = 0.1  # seconds
 
-    master = test_echo.TestEchoLossMaster(
-        LOCAL, PACKET_SIZE, N_PACKET, random_size=RANDOM_SIZE, timeout=TIMEOUT)
-    master.start(REMOTE, interval=INTERVAL)
+    master = test_echo.master_async(
+        LOCAL, REMOTE, PACKET_SIZE, N_PACKET, random_size=RANDOM_SIZE, interval=INTERVAL
+    )
