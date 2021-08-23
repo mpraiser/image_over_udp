@@ -44,6 +44,8 @@ async def master_tx(
 
 
 async def master_rx(buffer: asyncio.Queue):
+    # TODO: 添加包正确性校验
+    # TODO: 添加丢包率
     while True:
         t_recv, data = await buffer.get()
         seq, t_master, t_slave, payload = frame.deserialize(data)

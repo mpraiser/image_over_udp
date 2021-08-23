@@ -1,5 +1,5 @@
 import socket
-from typing import Tuple, List, Optional, Callable
+from typing import Optional, Callable
 
 from frame import Frame, FragFlag
 from utils import delay_ns
@@ -14,7 +14,7 @@ class Transceiver:
     使用UDP对图片进行分片传输
     内置私有分片传输协议
     """
-    def __init__(self, local: Tuple[str, int], *, bufsize=4096):
+    def __init__(self, local: tuple[str, int], *, bufsize=4096):
         self.local = local
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.__socket.bind(local)
@@ -26,10 +26,10 @@ class Transceiver:
     def set_blocking(self, flag: Optional[bool]):
         self.set_blocking(flag)
 
-    def send(self, remote: Tuple[str, int], data: bytes):
+    def send(self, remote: tuple[str, int], data: bytes):
         self.__socket.sendto(data, remote)
 
-    def recv(self, remote: Optional[Tuple[str, int]]):
+    def recv(self, remote: Optional[tuple[str, int]]):
         """
         blocking receive
         :param remote: if None, will receive from whichever address
@@ -39,7 +39,7 @@ class Transceiver:
             if remote is None or addr == remote:
                 return data
 
-    def send_protocol(self, remote: Tuple[str, int], data: bytes, *, interval=0):
+    def send_protocol(self, remote: tuple[str, int], data: bytes, *, interval=0):
         """send with fragmentation according to protocol"""
         if len(data) > Frame.MAX_PAYLOAD_LEN:
             frames = self.fragmentation(data)
@@ -61,7 +61,7 @@ class Transceiver:
         print("End of transmitting.")
 
     @staticmethod
-    def fragmentation(data: bytes) -> List[Frame]:
+    def fragmentation(data: bytes) -> list[Frame]:
         """分片"""
         step = Frame.MAX_PAYLOAD_LEN
         fragments = [data[i:i+step] for i in range(0, len(data), step)]
@@ -79,7 +79,7 @@ class Transceiver:
         return frames
 
     @staticmethod
-    def reassembly(buffer: List[Frame]) -> bytes:
+    def reassembly(buffer: list[Frame]) -> bytes:
         encoded = b""
         state = 'start'
         buffer = iter(buffer)
@@ -112,7 +112,7 @@ class Transceiver:
 
     def listen_protocol(
             self,
-            remote: Tuple[str, int],
+            remote: tuple[str, int],
             *,
             callback: Callable[[int, bytes], None],
             timeout=50):
@@ -127,7 +127,7 @@ class Transceiver:
             buffer = []
             n_frag = None
 
-        def callback_warp(buf: List[Frame]):
+        def callback_warp(buf: list[Frame]):
             nonlocal count
             full_data = self.reassembly(buf)
             callback(count, full_data)

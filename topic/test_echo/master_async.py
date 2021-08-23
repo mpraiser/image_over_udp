@@ -48,7 +48,7 @@ async def main(
           f"loss = {loss:.2%}, average delay = {avg_delay:.2f} ms")
 
 
-def master_async(
+def run_master_async(
         local: tuple[str, int],
         remote: tuple[str, int],
         max_packet_size: int,
