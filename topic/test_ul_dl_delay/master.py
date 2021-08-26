@@ -37,14 +37,13 @@ async def master_tx(
     transport: asyncio.DatagramTransport
     transport, protocol = await loop.create_datagram_endpoint(
         lambda: Protocol(buffer),
-        local_addr=local,
-        remote_addr=remote
+        local_addr=local
     )
     for seq, packet in enumerate(dataset):
         eof = (seq >= len(dataset) - 1)
         data = frame.serialize(seq, eof, time.time(), 0, packet)
         if (not simulate_loss) or eof or random.random() > 0.5:
-            transport.sendto(data)
+            transport.sendto(data, remote)
         await asyncio.sleep(interval)
 
     await eof_received

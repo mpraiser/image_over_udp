@@ -1,6 +1,5 @@
 import random
 import time
-from typing import Tuple, List
 
 from .dataset import load
 from transceiver import Transceiver
@@ -8,8 +7,8 @@ from utils import delay_ns
 
 
 def transmit_dataset(
-        local: Tuple[str, int],
-        remote: Tuple[str, int],
+        local: tuple[str, int],
+        remote: tuple[str, int],
         path: str,
         *,
         interval: float = 0,
@@ -18,7 +17,7 @@ def transmit_dataset(
         ):
 
     # prepare sending data
-    dataset: List[bytes] = []
+    dataset: list[bytes] = []
     for _ in range(repeat):
         for packet in load(path):
             if (not random_tx) or random.randint(0, 1) == 1:
