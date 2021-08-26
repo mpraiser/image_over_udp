@@ -44,7 +44,6 @@ def plot_t_ul(data: list[tuple[int, float]]):
 
     x = [i for i in range(max_seq + 1)]
     t = []
-    loss = []
     for i in x:
         if i in t_map:
             t.append(t_map[i])
@@ -52,5 +51,19 @@ def plot_t_ul(data: list[tuple[int, float]]):
             t.append(0)
             plt.scatter(i, 0, marker="x", c="red")
 
+    plt.xlabel("packet no.")
+    plt.ylabel("UL delay / ms")
     plt.plot(x, t)
+    plt.show()
+
+
+def plot_t_ul_hist(data: list[tuple[int, float]]):
+    """上行时间直方图"""
+    t = []
+    for seq, t_ul in data:
+        t.append(t_ul)
+
+    plt.hist(t, bins=20, edgecolor="black")
+    plt.xlabel("UL delay / ms")
+    plt.ylabel("frequency")
     plt.show()
