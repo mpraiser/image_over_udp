@@ -9,6 +9,8 @@ if __name__ == "__main__":
     TIMEOUT = 5  # 接收超时等待时间, None或者一个数，但不能为0；None表示会一直阻塞
     POST_PROCESS = False  # 为True会先缓存后处理，为False会同时接收和处理
 
-    test_loss.receive_for_dataset(
-        LOCAL, REMOTE, PATH, timeout=TIMEOUT, repeat=REPEAT, post_process=POST_PROCESS
-    )
+    # test_loss.receive_for_dataset(
+    #     LOCAL, REMOTE, PATH, timeout=TIMEOUT, repeat=REPEAT, post_process=POST_PROCESS
+    # )
+
+    test_loss.receive_for(LOCAL, None, None, timeout=TIMEOUT, post_process=POST_PROCESS)
