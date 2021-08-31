@@ -6,7 +6,7 @@ if __name__ == "__main__":
     REMOTE = ("127.0.0.1", 8000)
     PLOT = False  # 是否绘制上行时延图
     PLOT_HIST = True  # 是否绘制上行时延直方图
-    ECHO = True  # slave是否进行回复
+    ECHO = False  # slave是否进行回复
 
     data = test_ul_dl_delay.run_slave(LOCAL, REMOTE, echo=ECHO)
     if PLOT:

@@ -5,6 +5,7 @@ import asyncio
 import topic.test_ul_dl_delay.frame as frame
 from topic.test_loss import generate
 from utils import hex_str
+from transceiver import Transceiver
 
 
 class Protocol(asyncio.DatagramProtocol):
@@ -98,9 +99,39 @@ def run_master(
         *,
         random_size: bool = True,
         interval: float = 0,
-        simulate_loss: bool = False
+        simulate_loss: bool = False,
+        tx_only: bool = False
 ):
-    asyncio.run(main(
-        local, remote, max_packet_size, n_packet,
-        random_size=random_size, interval=interval, simulate_loss=simulate_loss
+    if tx_only:
+        main_simple(
+            local, remote, max_packet_size, n_packet,
+            random_size=random_size, interval=interval, simulate_loss=simulate_loss
+        )
+    else:
+        asyncio.run(main(
+            local, remote, max_packet_size, n_packet,
+            random_size=random_size, interval=interval, simulate_loss=simulate_loss
+        ))
+
+
+def main_simple(
+        local: tuple[str, int],
+        remote: tuple[str, int],
+        max_packet_size: int,
+        n_packet: int,
+        *,
+        random_size: bool,
+        interval: float = 0,
+        simulate_loss: bool
+):
+    max_payload_size = max_packet_size - frame.prefix_size
+    dataset = list(generate(
+        max_payload_size, n_packet, random_size=random_size
     ))
+    transport = Transceiver(local)
+    for seq, packet in enumerate(dataset):
+        eof = (seq >= len(dataset) - 1)
+        data = frame.serialize(seq, eof, time.time(), 0, packet)
+        if (not simulate_loss) or eof or random.random() > 0.5:
+            transport.send(remote, data)
+        time.sleep(interval)
