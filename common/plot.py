@@ -4,6 +4,12 @@ from common.utils import Multiset
 
 
 def plot_t_ul(data: list[tuple[int, float]]):
+    """
+    上行时间折线图
+
+    :param data:
+    :return:
+    """
     max_seq = max(data, key=lambda arg: arg[0])[0]
     t_map = dict(data)
 

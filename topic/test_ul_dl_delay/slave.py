@@ -3,7 +3,7 @@ import random
 
 from common.transceiver import Transceiver
 from common.utils import hex_str
-from topic.test_ul_dl_delay import frame
+from .frame_def import frame
 
 
 def run_slave(
@@ -20,7 +20,7 @@ def run_slave(
 
     while True:
         data_recv = transport.recv(None)
-        seq, eof, t_master, _, payload = frame.deserialize(data_recv)
+        seq, eof, t_master, _, payload = frame.deserialize(data_recv).values()
         if simulate_delay:
             time.sleep(random.random() * 0.02)
         t_slave = time.time()

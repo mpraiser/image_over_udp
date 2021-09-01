@@ -2,7 +2,7 @@ import time
 import random
 import asyncio
 
-import topic.test_ul_dl_delay.frame as frame
+from .frame_def import frame
 from common.dataset import generate
 from common.utils import hex_str
 from common.transceiver import Transceiver
@@ -56,7 +56,7 @@ async def master_rx(eof_received: asyncio.Future, buffer: asyncio.Queue):
     # TODO: 添加丢包率
     while True:
         t_recv, data = await buffer.get()
-        seq, eof, t_master, t_slave, payload = frame.deserialize(data)
+        seq, eof, t_master, t_slave, payload = frame.deserialize(data).values()
         t_ul = (t_slave - t_master) * 1000
         t_dl = (t_recv - t_slave) * 1000
         print(f"seq = {seq}, ul = {t_ul:.2f} ms, dl = {t_dl:.2f} ms: {hex_str(payload)}")
@@ -76,7 +76,7 @@ async def main(
         interval: float = 0,
         simulate_loss: bool
 ):
-    max_payload_size = max_packet_size - frame.prefix_size
+    max_payload_size = max_packet_size - frame.PREFIX_SIZE
     dataset = list(generate(
         max_payload_size, n_packet, random_size=random_size
     ))
@@ -124,7 +124,7 @@ def main_simple(
         interval: float = 0,
         simulate_loss: bool
 ):
-    max_payload_size = max_packet_size - frame.prefix_size
+    max_payload_size = max_packet_size - frame.PREFIX_SIZE
     dataset = list(generate(
         max_payload_size, n_packet, random_size=random_size
     ))
