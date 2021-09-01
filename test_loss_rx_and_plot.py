@@ -1,6 +1,6 @@
 from net_test_tools.topic import test_loss
-from net_test_tools.common.dataset import preprocess
-from net_test_tools.common import plot_loss
+from net_test_tools.dataset import preprocess
+from net_test_tools.plot import plot_loss
 
 
 if __name__ == "__main__":

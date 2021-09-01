@@ -1,7 +1,7 @@
 import random
 from typing import List
 
-from net_test_tools.common.utils import Multiset, hex_str
+from net_test_tools.utils import Multiset, hex_str
 
 
 def generate_file(path: str,

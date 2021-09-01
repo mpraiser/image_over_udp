@@ -1,4 +1,4 @@
-from net_test_tools.topic import test_ul_dl_delay
+from net_test_tools.topic import udping
 
 
 if __name__ == "__main__":
@@ -10,6 +10,6 @@ if __name__ == "__main__":
     TIMEOUT = 5  # 接收超时等待时间, None或者一个数，但不能为0；None表示会一直阻塞
     INTERVAL = 0.1  # seconds, at least 0.1 sec
     TX_ONLY = False  # 是否只发送不接受（提高性能）
-    test_ul_dl_delay.run_master(
+    udping.run_master(
         LOCAL, REMOTE, PACKET_SIZE, N_PACKET, random_size=RANDOM_SIZE, interval=INTERVAL, tx_only=TX_ONLY
     )

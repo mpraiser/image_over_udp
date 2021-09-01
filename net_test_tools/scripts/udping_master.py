@@ -1,7 +1,6 @@
 import click
-# from typing import Optional
 
-from net_test_tools.topic import test_ul_dl_delay
+from net_test_tools.topic import udping
 
 
 @click.command()
@@ -33,26 +32,31 @@ from net_test_tools.topic import test_ul_dl_delay
     "--random_size", "-r",
     type=bool,
     help="Whether size of each packet is random.",
-    default=True
+    default=True,
+    show_default=True
 )
 @click.option(
     "--interval", "-i",
     type=float,
     help="Interval of transmit.",
-    default=1
+    default=1,
+    show_default=True
 )
 @click.option(
-    "--tx_only",
+    "--no_echo", "-ne",
     type=bool,
     help="Whether only to transmit, meaning lower interval is acceptable.",
-    default=False
+    default=False,
+    show_default=True,
+    is_flag=True
 )
 def udping_master(
         local: tuple[str, int], remote: tuple[str, int],
         packet_size: int, n_packet: int, random_size: bool,
-        interval: float, tx_only: bool
+        interval: float, no_echo: bool
 ):
-    test_ul_dl_delay.run_master(
+    tx_only = no_echo
+    udping.run_master(
         local, remote, packet_size, n_packet, random_size=random_size, interval=interval, tx_only=tx_only
     )
 

@@ -3,9 +3,9 @@ import random
 import asyncio
 
 from .frame_def import frame
-from net_test_tools.common.dataset import generate
-from net_test_tools.common.utils import hex_str
-from net_test_tools.common.transceiver import Transceiver
+from net_test_tools.dataset import generate
+from net_test_tools.utils import hex_str
+from net_test_tools.transceiver import Transceiver
 
 
 class Protocol(asyncio.DatagramProtocol):

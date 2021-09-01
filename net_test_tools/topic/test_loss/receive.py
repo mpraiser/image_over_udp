@@ -2,9 +2,9 @@ import socket
 from typing import Tuple, Optional
 from collections import deque
 
-from net_test_tools.common.dataset import preprocess
-from net_test_tools.common.transceiver import Transceiver
-from net_test_tools.common.utils import Multiset, hex_str
+from net_test_tools.dataset import preprocess
+from net_test_tools.transceiver import Transceiver
+from net_test_tools.utils import Multiset, hex_str
 
 
 def receive_for_dataset(

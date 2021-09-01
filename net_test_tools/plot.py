@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 
-from net_test_tools.common.utils import Multiset
+from net_test_tools.utils import Multiset
 
 
 def plot_t_ul(data: list[tuple[int, float]]):

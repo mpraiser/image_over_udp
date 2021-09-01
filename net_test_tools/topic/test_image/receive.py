@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from net_test_tools.common.transceiver import Transceiver, FragFailure
+from net_test_tools.transceiver import Transceiver, FragFailure
 from typing import Tuple
 
 

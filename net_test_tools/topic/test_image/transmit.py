@@ -1,6 +1,6 @@
 import cv2
 from typing import Tuple
-from net_test_tools.common.transceiver import Transceiver
+from net_test_tools.transceiver import Transceiver
 
 
 def transmit_image(local: Tuple[str, int], remote: Tuple[str, int], path: str, *, interval=0):

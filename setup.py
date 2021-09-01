@@ -12,6 +12,7 @@ setup(
     entry_points={
         'console_scripts': [
             'udping-master = net_test_tools.scripts.udping_master:udping_master',
+            'udping-slave = net_test_tools.scripts.udping_slave:udping_slave',
         ],
     },
 )
