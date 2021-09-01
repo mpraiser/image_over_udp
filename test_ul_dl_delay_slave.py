@@ -1,3 +1,4 @@
+import common.plot
 from topic import test_ul_dl_delay
 
 
@@ -10,6 +11,6 @@ if __name__ == "__main__":
 
     data = test_ul_dl_delay.run_slave(LOCAL, REMOTE, echo=ECHO)
     if PLOT:
-        test_ul_dl_delay.plot_t_ul(data)
+        common.plot.plot_t_ul(data)
     if PLOT_HIST:
-        test_ul_dl_delay.plot_t_ul_hist(data)
+        common.plot.plot_t_ul_hist(data)

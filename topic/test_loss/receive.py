@@ -2,9 +2,9 @@ import socket
 from typing import Tuple, Optional
 from collections import deque
 
-from .dataset import preprocess_dataset
-from transceiver import Transceiver
-from utils import Multiset, hex_str
+from common.dataset import preprocess
+from common.transceiver import Transceiver
+from common.utils import Multiset, hex_str
 
 
 def receive_for_dataset(
@@ -28,7 +28,7 @@ def receive_for_dataset(
     :return:
     """
 
-    dataset: Multiset = preprocess_dataset(path, repeat)
+    dataset: Multiset = preprocess(path, repeat)
     return receive_for(local, remote, dataset, post_process=post_process, timeout=timeout)
 
 

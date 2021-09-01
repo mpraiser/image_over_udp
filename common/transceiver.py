@@ -2,7 +2,7 @@ import socket
 from typing import Optional, Callable
 
 from frame import Frame, FragFlag
-from utils import delay_ns
+from common.utils import delay_ns
 
 
 class FragFailure(Exception):

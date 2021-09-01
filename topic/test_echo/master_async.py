@@ -2,7 +2,7 @@ import asyncio
 import time
 
 from .master_sync import prepare_dataset
-from utils import hex_str
+from common.utils import hex_str
 
 
 async def main(

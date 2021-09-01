@@ -1,5 +1,5 @@
-import topic.test_loss.dataset as dataset
-from utils import hex_str
+import common.dataset as dataset
+from common.utils import hex_str
 
 
 if __name__ == "__main__":

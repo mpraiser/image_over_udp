@@ -1,5 +1,5 @@
-from transceiver import Transceiver
-from utils import hex_str
+from common.transceiver import Transceiver
+from common.utils import hex_str
 
 
 class TestEchoLossSlave:

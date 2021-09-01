@@ -1,4 +1,6 @@
 from topic import test_loss
+from common.dataset import preprocess
+from common.plot import plot_loss
 
 
 if __name__ == "__main__":
@@ -9,5 +11,5 @@ if __name__ == "__main__":
     TIMEOUT = 5  # 接收超时等待时间, None或者一个数，但不能为0；None表示会一直阻塞
 
     lost = test_loss.receive_for_dataset(LOCAL, REMOTE, PATH, timeout=TIMEOUT, repeat=REPEAT)
-    sent = test_loss.dataset.preprocess_dataset(PATH, REPEAT)
-    test_loss.plot_received(sent, lost)
+    sent = preprocess(PATH, REPEAT)
+    plot_loss(sent, lost)

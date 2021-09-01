@@ -3,9 +3,9 @@ import random
 import asyncio
 
 import topic.test_ul_dl_delay.frame as frame
-from topic.test_loss import generate
-from utils import hex_str
-from transceiver import Transceiver
+from common.dataset import generate
+from common.utils import hex_str
+from common.transceiver import Transceiver
 
 
 class Protocol(asyncio.DatagramProtocol):

@@ -2,10 +2,9 @@ import socket
 import time
 from typing import Optional
 
-from topic.test_loss import generate
-from transceiver import Transceiver
-
-from utils import hex_str
+from common.dataset import generate
+from common.transceiver import Transceiver
+from common.utils import hex_str
 
 
 def prepare_dataset(max_packet_size: int, n_packet: int, *, random_size: bool):
