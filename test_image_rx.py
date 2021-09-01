@@ -1,5 +1,4 @@
-from topic import test_image
-
+from net_test_tools.topic import test_image
 
 if __name__ == "__main__":
     LOCAL = ("127.0.0.1", 8001)

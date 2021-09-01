@@ -1,8 +1,8 @@
 import time
 import random
 
-from common.transceiver import Transceiver
-from common.utils import hex_str
+from net_test_tools.common.transceiver import Transceiver
+from net_test_tools.common.utils import hex_str
 from .frame_def import frame
 
 

@@ -1,9 +1,9 @@
 import random
 import time
 
-from common.dataset import load
-from common.transceiver import Transceiver
-from common.utils import delay_ns
+from net_test_tools.common.dataset import load
+from net_test_tools.common.transceiver import Transceiver
+from net_test_tools.common.utils import delay_ns
 
 
 def transmit_dataset(

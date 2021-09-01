@@ -1,4 +1,4 @@
-from topic import test_ul_dl_delay
+from net_test_tools.topic import test_ul_dl_delay
 
 
 if __name__ == "__main__":

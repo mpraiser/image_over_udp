@@ -1,5 +1,5 @@
 import struct
-from common.frame import LinearFrame
+from net_test_tools.common.frame import LinearFrame
 
 
 frame = LinearFrame(

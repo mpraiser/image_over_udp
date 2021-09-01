@@ -1,4 +1,4 @@
-from topic import test_loss
+from net_test_tools.topic import test_loss
 
 
 if __name__ == "__main__":

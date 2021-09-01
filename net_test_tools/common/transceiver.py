@@ -1,8 +1,8 @@
 import socket
 from typing import Optional, Callable
 
-from frame import Frame, FragFlag
-from common.utils import delay_ns
+from net_test_tools.frame import Frame, FragFlag
+from net_test_tools.common.utils import delay_ns
 
 
 class FragFailure(Exception):

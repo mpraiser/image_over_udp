@@ -1,5 +1,5 @@
-import common.dataset as dataset
-from common.utils import hex_str
+import net_test_tools.common.dataset as dataset
+from net_test_tools.common.utils import hex_str
 
 
 if __name__ == "__main__":

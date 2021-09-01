@@ -1,4 +1,4 @@
-from topic import test_echo
+from net_test_tools.topic import test_echo
 
 
 if __name__ == "__main__":
