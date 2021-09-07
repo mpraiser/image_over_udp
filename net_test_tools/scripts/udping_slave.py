@@ -49,9 +49,15 @@ def udping_slave(
         no_echo: bool
 ):
     echo = not no_echo
-    data = udping.run_slave(
-        local, remote, echo=echo
-    )
+    slave = udping.slave.Slave()
+    try:
+        slave.run(
+            local, remote, echo=echo
+        )
+    except KeyboardInterrupt:
+        pass
+
+    data = slave.result
     if plot_line_chart:
         plot_t_ul(data)
     if plot_histogram:

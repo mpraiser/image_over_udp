@@ -9,7 +9,9 @@ if __name__ == "__main__":
     PLOT_HISTOGRAM = True  # 是否绘制上行时延直方图
     ECHO = True  # slave是否进行回复
 
-    data = udping.run_slave(LOCAL, REMOTE, echo=ECHO)
+    slave = udping.slave.Slave()
+    slave.run(LOCAL, REMOTE, echo=ECHO)
+    data = slave.result
     if PLOT_LINE_CHART:
         net_test_tools.plot.plot_t_ul(data)
     if PLOT_HISTOGRAM:
