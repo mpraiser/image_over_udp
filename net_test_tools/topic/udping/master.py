@@ -1,6 +1,7 @@
 import time
 import random
 import asyncio
+from typing import Union
 
 from .frame_def import frame
 from net_test_tools.dataset import generate
@@ -31,7 +32,7 @@ async def master_tx(
         local: tuple[str, int],
         remote: tuple[str, int],
         *,
-        interval: float = 0,
+        interval: tuple[tuple[int, float]] = 0,
         simulate_loss: bool
 ):
     loop = asyncio.get_running_loop()
@@ -40,12 +41,18 @@ async def master_tx(
         lambda: Protocol(buffer),
         local_addr=local
     )
+    iv_ptr = 0
+    iv_count = 0
     for seq, packet in enumerate(dataset):
         eof = (seq >= len(dataset) - 1)
         data = frame.serialize(seq, eof, time.time(), 0, packet)
         if (not simulate_loss) or eof or random.random() > 0.5:
             transport.sendto(data, remote)
-        await asyncio.sleep(interval)
+
+        await asyncio.sleep(interval[iv_ptr][1])
+        iv_count += 1
+        if iv_count >= interval[iv_ptr][0]:
+            iv_ptr = (iv_ptr + 1) % len(interval)
 
     await eof_received
     transport.close()
@@ -73,7 +80,7 @@ async def main(
         n_packet: int,
         *,
         random_size: bool = True,
-        interval: float = 0,
+        interval: tuple[tuple[int, float]] = 0,
         simulate_loss: bool
 ):
     max_payload_size = max_packet_size - frame.PREFIX_SIZE
@@ -98,10 +105,12 @@ def run_master(
         n_packet: int,
         *,
         random_size: bool = True,
-        interval: float = 0,
+        interval: Union[float, tuple[tuple[int, float]]] = 0,
         simulate_loss: bool = False,
         tx_only: bool = False
 ):
+    if isinstance(interval, float):
+        interval = ((1, interval),)  # necessary conversion
     if tx_only:
         main_simple(
             local, remote, max_packet_size, n_packet,
@@ -121,7 +130,7 @@ def main_simple(
         n_packet: int,
         *,
         random_size: bool,
-        interval: float = 0,
+        interval: tuple[tuple[int, float]],
         simulate_loss: bool
 ):
     max_payload_size = max_packet_size - frame.PREFIX_SIZE
@@ -129,9 +138,15 @@ def main_simple(
         max_payload_size, n_packet, random_size=random_size
     ))
     transport = Transceiver(local)
+    iv_ptr = 0
+    iv_count = 0
     for seq, packet in enumerate(dataset):
         eof = (seq >= len(dataset) - 1)
         data = frame.serialize(seq, eof, time.time(), 0, packet)
         if (not simulate_loss) or eof or random.random() > 0.5:
             transport.send(remote, data)
-        time.sleep(interval)
+
+        time.sleep(interval[iv_ptr][1])
+        iv_count += 1
+        if iv_count >= interval[iv_ptr][0]:
+            iv_ptr = (iv_ptr + 1) % len(interval)

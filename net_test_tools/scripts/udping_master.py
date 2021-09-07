@@ -38,9 +38,16 @@ from net_test_tools.topic import udping
 @click.option(
     "--interval", "-i",
     type=float,
-    help="Interval of transmit.",
+    help="Interval of transmit. Note that this option has lower priority than --complex_interval",
     default=1,
     show_default=True
+)
+@click.option(
+    "--complex_interval", "-ci",
+    type=(int, float),
+    help="Complex interval, implying how many packets sent in which interval. "
+         "If this option is set, --interval will not work.",
+    multiple=True
 )
 @click.option(
     "--no_echo", "-ne",
@@ -53,9 +60,12 @@ from net_test_tools.topic import udping
 def udping_master(
         local: tuple[str, int], remote: tuple[str, int],
         packet_size: int, n_packet: int, random_size: bool,
-        interval: float, no_echo: bool
+        interval: float, complex_interval: tuple[int, float], no_echo: bool
 ):
     tx_only = no_echo
+    if len(complex_interval) > 0:
+        interval = complex_interval
+    print(f"interval is: {interval}")
     udping.run_master(
         local, remote, packet_size, n_packet, random_size=random_size, interval=interval, tx_only=tx_only
     )
