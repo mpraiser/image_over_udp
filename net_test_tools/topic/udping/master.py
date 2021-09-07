@@ -5,7 +5,7 @@ from typing import Union
 
 from .frame_def import frame
 from net_test_tools.dataset import generate
-from net_test_tools.utils import hex_str
+from net_test_tools.utils import hex_str, delay_ns
 from net_test_tools.transceiver import Transceiver
 
 
@@ -53,6 +53,7 @@ async def master_tx(
         iv_count += 1
         if iv_count >= interval[iv_ptr][0]:
             iv_ptr = (iv_ptr + 1) % len(interval)
+            iv_count = 0
 
     await eof_received
     transport.close()
@@ -146,7 +147,8 @@ def main_simple(
         if (not simulate_loss) or eof or random.random() > 0.5:
             transport.send(remote, data)
 
-        time.sleep(interval[iv_ptr][1])
+        delay_ns(interval[iv_ptr][1] * 1e9)
         iv_count += 1
         if iv_count >= interval[iv_ptr][0]:
             iv_ptr = (iv_ptr + 1) % len(interval)
+            iv_count = 0
