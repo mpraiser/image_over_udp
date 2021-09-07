@@ -2,7 +2,6 @@ import click
 from typing import Optional
 
 from net_test_tools.topic import udping
-from net_test_tools.plot import plot_t_ul, plot_t_ul_hist
 
 
 @click.command()
@@ -57,11 +56,10 @@ def udping_slave(
     except KeyboardInterrupt:
         pass
 
-    data = slave.result
     if plot_line_chart:
-        plot_t_ul(data)
+        slave.plot_line_chart()
     if plot_histogram:
-        plot_t_ul_hist(data)
+        slave.plot_histogram()
 
 
 if __name__ == "__main__":

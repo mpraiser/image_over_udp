@@ -3,24 +3,29 @@ from matplotlib import pyplot as plt
 from net_test_tools.utils import Multiset
 
 
-def plot_t_ul(data: list[tuple[int, float]]):
+def plot_line_chart(data: list[tuple[int, float]]):
     """
     上行时间折线图
 
-    :param data:
+    :param data: list of (seq, t_ul), must be sorted.
     :return:
     """
     max_seq = max(data, key=lambda arg: arg[0])[0]
     t_map = dict(data)
-
-    x = [i for i in range(max_seq + 1)]
-    t = []
-    for i in x:
-        if i in t_map:
-            t.append(t_map[i])
-        else:
-            t.append(0)
+    # precess data
+    x = [item[0] for item in data]
+    t = [item[1] for item in data]
+    for i in range(max_seq + 1):
+        if i not in t_map:
             plt.scatter(i, 0, marker="x", c="red")
+    # x = [i for i in range(max_seq + 1)]
+    # t = []
+    # for i in x:
+    #     if i in t_map:
+    #         t.append(t_map[i])
+    #     else:
+    #         t.append(0)
+    #         plt.scatter(i, 0, marker="x", c="red")
 
     plt.xlabel("packet no.")
     plt.ylabel("UL delay / ms")
@@ -28,10 +33,15 @@ def plot_t_ul(data: list[tuple[int, float]]):
     plt.show()
 
 
-def plot_t_ul_hist(data: list[tuple[int, float]]):
-    """上行时间直方图"""
+def plot_histogram(data: list[tuple[int, float]]):
+    """
+    上行时间直方图
+
+    :param data: list of (seq, t_ul), must be sorted.
+    :return:
+    """
     t = []
-    for seq, t_ul in data:
+    for _, t_ul in data:
         t.append(t_ul)
 
     plt.hist(t, bins=20, edgecolor="black")

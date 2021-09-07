@@ -1,4 +1,6 @@
 import struct
+from collections import namedtuple
+
 from net_test_tools.frame import LinearFrame
 
 
@@ -12,3 +14,5 @@ frame = LinearFrame(
     }
 )
 frame.PREFIX_SIZE = struct.calcsize("H?dd")
+
+Entry = namedtuple("Entry", ["seq", "eof", "t_ul", "t_dl"])

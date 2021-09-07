@@ -3,7 +3,7 @@ import random
 import asyncio
 from typing import Union
 
-from .frame_def import frame
+from .utils import frame
 from net_test_tools.dataset import generate
 from net_test_tools.utils import hex_str, delay_ns
 from net_test_tools.transceiver import Transceiver
