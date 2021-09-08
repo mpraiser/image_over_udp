@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     slave = udping.slave.Slave()
     slave.run(LOCAL, REMOTE, echo=ECHO)
-    data = slave.result
+    print(f"total = {slave.result[-1].seq + 1}, loss = {slave.loss:.2%}")
     if PLOT_LINE_CHART:
         slave.plot_line_chart()
     if PLOT_HISTOGRAM:

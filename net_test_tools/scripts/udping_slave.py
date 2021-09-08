@@ -37,7 +37,7 @@ from net_test_tools.topic import udping
 @click.option(
     "--no_echo", "-ne",
     type=bool,
-    help="Whether to echo.",
+    help="Not to echo.",
     is_flag=True,
     default=False,
     show_default=True,
@@ -55,7 +55,7 @@ def udping_slave(
         )
     except KeyboardInterrupt:
         pass
-
+    print(f"total = {slave.result[-1].seq + 1}, loss = {slave.loss:.2%}")
     if plot_line_chart:
         slave.plot_line_chart()
     if plot_histogram:

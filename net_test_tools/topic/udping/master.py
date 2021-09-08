@@ -84,10 +84,12 @@ async def main(
         interval: tuple[tuple[int, float]] = 0,
         simulate_loss: bool
 ):
+    print("Preparing dataset.")
     max_payload_size = max_packet_size - frame.PREFIX_SIZE
     dataset = list(generate(
         max_payload_size, n_packet, random_size=random_size
     ))
+    print("Start transmitting.")
     eof_received = asyncio.Future()
     buffer = asyncio.Queue()
     await asyncio.gather(
@@ -134,10 +136,12 @@ def main_simple(
         interval: tuple[tuple[int, float]],
         simulate_loss: bool
 ):
+    print("Preparing dataset.")
     max_payload_size = max_packet_size - frame.PREFIX_SIZE
     dataset = list(generate(
         max_payload_size, n_packet, random_size=random_size
     ))
+    print("Start transmitting.")
     transport = Transceiver(local)
     iv_ptr = 0
     iv_count = 0

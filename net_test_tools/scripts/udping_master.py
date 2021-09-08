@@ -32,13 +32,14 @@ from net_test_tools.topic import udping
     "--random_size", "-r",
     type=bool,
     help="Whether size of each packet is random.",
-    default=True,
+    is_flag=True,
+    default=False,
     show_default=True
 )
 @click.option(
     "--interval", "-i",
     type=float,
-    help="Interval of transmit. Note that this option has lower priority than --complex_interval",
+    help="Interval after transmit. Note that this option has lower priority than --complex_interval.",
     default=1,
     show_default=True
 )
@@ -46,13 +47,14 @@ from net_test_tools.topic import udping
     "--complex_interval", "-ci",
     type=(int, float),
     help="Complex interval, implying how many packets sent in which interval. "
+         "This option allows multiple value, makes transmission in circulation of each mode."
          "If this option is set, --interval will not work.",
     multiple=True
 )
 @click.option(
     "--no_echo", "-ne",
     type=bool,
-    help="Whether only to transmit, meaning lower interval is acceptable.",
+    help="Only to transmit, not to deal with receive. If set, interval lower than 0.1 is acceptable.",
     default=False,
     show_default=True,
     is_flag=True

@@ -1,6 +1,7 @@
 import time
 import platform
 from collections import Counter
+from typing import Optional
 
 
 class Multiset(Counter):
@@ -33,9 +34,18 @@ class Multiset(Counter):
         return self
 
 
-def hex_str(packet: bytes) -> str:
-    """convert bytes into hex-string"""
-    return packet.hex(sep=" ").upper()
+def hex_str(packet: bytes, display_limit: Optional[int] = 16) -> str:
+    """
+    convert bytes into hex-string
+    :param packet: packet to convert
+    :param display_limit: limit of number of bytes to display, None to set it infinite.
+    """
+    if display_limit is None:
+        return packet.hex(sep=" ").upper()
+    else:
+        ret = packet[:display_limit].hex(sep=" ").upper()
+        ret += f"... ({len(packet) - display_limit} bytes left)"
+        return ret
 
 
 if platform.system() != "Linux":

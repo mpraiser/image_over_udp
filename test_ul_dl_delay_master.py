@@ -10,7 +10,7 @@ if __name__ == "__main__":
     TIMEOUT = 5  # 接收超时等待时间, None或者一个数，但不能为0；None表示会一直阻塞
     INTERVAL: tuple[tuple[int, float], ...] = (
         (7, 0.01),
-        (1, 0.5)
+        (1, 0.1)
     )  # seconds, at least 0.1 sec
     TX_ONLY = True  # 是否只发送不接受（提高性能）
     udping.run_master(
