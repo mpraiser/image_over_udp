@@ -43,6 +43,7 @@ def hex_str(packet: bytes, display_limit: Optional[int] = 16) -> str:
     if display_limit is None:
         return packet.hex(sep=" ").upper()
     else:
+        display_limit = min(display_limit, len(packet))
         ret = packet[:display_limit].hex(sep=" ").upper()
         ret += f"... ({len(packet) - display_limit} bytes left)"
         return ret
