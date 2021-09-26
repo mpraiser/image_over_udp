@@ -1,5 +1,5 @@
 import random
-from typing import List
+from typing import Optional
 
 from net_test_tools.utils import Multiset, hex_str
 
@@ -26,10 +26,11 @@ def generate_file(path: str,
 
 
 def generate(packet_size: int,
-             n_packet: int,
+             n_packet: Optional[int],
              *,
              random_size=False):
-    for i in range(n_packet):
+    i = 0
+    while True:
         packet = []
         seq = i
         count = 0
@@ -41,6 +42,9 @@ def generate(packet_size: int,
         size = random.randint(1, packet_size) if random_size else packet_size
         packet += [random.randint(0, 255) for _ in range(size - 1)]
         yield bytes(packet)
+        i += 1
+        if n_packet is not None and i >= n_packet:
+            break
 
 
 def load(path: str):
@@ -51,7 +55,7 @@ def load(path: str):
             yield packet
 
 
-def loaded(path: str) -> List[bytes]:
+def loaded(path: str) -> list[bytes]:
     return list(load(path))
 
 

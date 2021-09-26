@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="net_test_tools",
-    version="0.0.4",
+    version="0.0.5",
     author="Raiser Ma",
     author_email="mraiser@foxmail.com",
     packages=find_packages(),

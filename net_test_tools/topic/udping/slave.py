@@ -29,18 +29,18 @@ class Slave:
         while True:
             try:
                 data_recv = transport.recv(None)
-                seq, eof, t_master, _, payload = frame.deserialize(data_recv).values()
+                infinite, seq, total, t_master, _, payload = frame.deserialize(data_recv).values()
                 if simulate_delay:
                     time.sleep(random.random() * 0.02)
                 t_slave = time.time()
                 if echo:
-                    data_send = frame.serialize(seq, eof, t_master, t_slave, payload)
+                    data_send = frame.serialize(infinite, seq, total, t_master, t_slave, payload)
                     transport.send(remote, data_send)
                 t_ul = (t_slave - t_master) * 1000
-                self.add_result(Entry(seq, eof, t_ul, 0))
-                print(f"seq = {seq}, ul = {t_ul:.2f} ms, echo: {hex_str(payload)}")
-                if eof:
-                    print(f"receive EOF!")
+                self.add_result(Entry(seq, total, t_ul, 0))
+                print(f"seq = {seq}, ul = {t_ul:.2f} ms, payload: {hex_str(payload)}")
+                if not infinite and seq >= total - 1:
+                    print(f"receive last packet!")
                     break
             except socket.timeout:
                 continue
@@ -67,16 +67,15 @@ class Slave:
                 else:
                     seqs.add(entry.seq)
             self.__is_result_checked = True
-        if not self.__result[-1].eof:
-            print("Warning: last packet is not EOF!")
+        # if not self.__result[-1].eof:
+        #     print("Warning: last packet is not EOF!")
 
     @property
     def loss(self):
         if len(self.__result) == 0:
             return 0
         self.__check_result()
-        max_seq = self.__result[-1].seq
-        total = max_seq + 1
+        total = max(self.__result[-1].total, 1)
         return 1 - len(self.__result) / total
 
     def plot_line_chart(self):

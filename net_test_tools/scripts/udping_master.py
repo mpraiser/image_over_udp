@@ -25,7 +25,7 @@ from net_test_tools.topic import udping
 @click.option(
     "--n_packet", "-n",
     type=int,
-    help="Number of packets to transmit.",
+    help="Number of packets to transmit. 0 or negative number means infinity.",
     required=True
 )
 @click.option(
@@ -68,8 +68,15 @@ def udping_master(
     if len(complex_interval) > 0:
         interval = complex_interval
     print(f"interval is: {interval}")
+    if n_packet <= 0:
+        print(f"Attention: infinite transmission enabled, preprocess disabled.")
+        n_packet = None
+        preprocess = False
+    else:
+        preprocess = True
     udping.run_master(
-        local, remote, packet_size, n_packet, random_size=random_size, interval=interval, tx_only=tx_only
+        local, remote, packet_size, n_packet, random_size=random_size, interval=interval, tx_only=tx_only,
+        preprocess=preprocess
     )
 
 
