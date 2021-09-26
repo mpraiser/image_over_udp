@@ -1,37 +1,50 @@
 import time
-import random
 import socket
 
+from net_test_tools.topic.interface import Topic
 from net_test_tools.plot import plot_line_chart, plot_histogram
 from net_test_tools.transceiver import Transceiver
 from net_test_tools.utils import hex_str
 from .utils import frame, Entry
 
 
-class Slave:
-    def __init__(self):
+class UdpingSlave(Topic):
+    def __init__(
+            self,
+            local: tuple[str, int],
+            remote: tuple[str, int],
+            *,
+            echo: bool = True,
+    ):
+        super().__init__()
         self.__result: list[Entry] = []
         self.__is_result_checked = True
 
-    def run(
-        self,
-        local: tuple[str, int],
-        remote: tuple[str, int],
-        *,
-        echo: bool,
-        simulate_delay: bool = False
-    ):
+        # configure address
+        self.local = local
+        self.remote = remote
+        self.echo = echo
+
+    def run(self):
         """receive from whichever address, echo to certain address"""
+        super().run()
+        echo = self.echo
+        local = self.local
+        remote = self.remote
         transport = Transceiver(local)
         transport.set_timeout(0.5)
         self.__result: list[Entry] = []
 
         while True:
             try:
-                data_recv = transport.recv(None)
-                infinite, seq, total, t_master, _, payload = frame.deserialize(data_recv).values()
-                if simulate_delay:
-                    time.sleep(random.random() * 0.02)
+                packet = transport.recv(None)
+                params = frame.deserialize(packet)
+                seq = params["seq"]
+                total = params["total"]
+                t_master = params["t_master"]
+                infinite = params["infinite"]
+                payload = params["payload"]
+
                 t_slave = time.time()
                 if echo:
                     data_send = frame.serialize(infinite, seq, total, t_master, t_slave, payload)
@@ -39,7 +52,7 @@ class Slave:
                 t_ul = (t_slave - t_master) * 1000
                 self.add_result(Entry(seq, total, t_ul, 0))
                 print(f"seq = {seq}, ul = {t_ul:.2f} ms, payload: {hex_str(payload)}")
-                if not infinite and seq >= total - 1:
+                if frame.is_end(params):
                     print(f"receive last packet!")
                     break
             except socket.timeout:

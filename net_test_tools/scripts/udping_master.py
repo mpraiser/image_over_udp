@@ -59,25 +59,33 @@ from net_test_tools.topic import udping
     show_default=True,
     is_flag=True
 )
+@click.option(
+    "--sync", "-s",
+    type=bool,
+    help="Synchronous transmission. it will disable receiving.",
+    default=False,
+    show_default=True,
+    is_flag=True
+)
 def udping_master(
         local: tuple[str, int], remote: tuple[str, int],
         packet_size: int, n_packet: int, random_size: bool,
-        interval: float, complex_interval: tuple[int, float], no_echo: bool
+        interval: float, complex_interval: tuple[int, float], no_echo: bool,
+        sync: bool
 ):
     tx_only = no_echo
-    if len(complex_interval) > 0:
-        interval = complex_interval
+    interval = complex_interval if len(complex_interval) > 0 else ((1, interval),)
     print(f"interval is: {interval}")
     if n_packet <= 0:
-        print(f"Attention: infinite transmission enabled, preprocess disabled.")
         n_packet = None
-        preprocess = False
-    else:
-        preprocess = True
-    udping.run_master(
-        local, remote, packet_size, n_packet, random_size=random_size, interval=interval, tx_only=tx_only,
-        preprocess=preprocess
+    runner = "sync" if sync else "async"
+    master = udping.master.UdpingMaster(
+        local, remote,
+        packet_size, n_packet,
+        random_size=random_size, interval=interval, tx_only=tx_only,
+        runner=runner
     )
+    master.run()
 
 
 if __name__ == "__main__":

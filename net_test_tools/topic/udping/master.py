@@ -18,9 +18,9 @@ class UdpingMaster(Topic):
             max_packet_size: int,
             n_packet: Optional[int],
             *,
-            random_size: bool,
-            interval: tuple[tuple[int, float]] = (1, 1),
-            preprocess: bool,
+            random_size: bool = False,
+            interval: tuple[tuple[int, float]] = ((1, 1),),
+            preprocess: bool = True,
             tx_only: bool = False,
             runner: str,
     ):
@@ -80,7 +80,7 @@ class UdpingMaster(Topic):
             asyncio.run(
                 async_master_main(
                     self.local, self.remote,
-                    self.packets, self.next_interval, self.add_result,
+                    self.packets, self.next_interval, self.handle_packet,
                     tx_only=self.tx_only
                 )
             )
@@ -173,7 +173,10 @@ async def async_master_main(
             )
         )
         tasks.append(rx)
-    await asyncio.gather(*tasks)
+    try:
+        await asyncio.gather(*tasks)
+    except KeyboardInterrupt:
+        transport.close()
 
 
 async def async_master_tx(
@@ -201,6 +204,7 @@ async def async_master_rx(
         is_end = handle_packet(data, t_recv)
         if is_end:
             last_packet.set_result(True)
+            break
 
 
 def sync_master_main(

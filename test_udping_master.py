@@ -12,11 +12,11 @@ if __name__ == "__main__":
         (7, 0.01),
         (1, 0.1)
     )  # seconds, at least 0.1 sec
-    TX_ONLY = True  # 是否只发送不接受（提高性能）
+    TX_ONLY = False  # 是否只发送不接受（提高性能）
     master = udping.master.UdpingMaster(
         LOCAL, REMOTE,
         PACKET_SIZE, N_PACKET,
         random_size=RANDOM_SIZE, interval=INTERVAL, preprocess=True,
-        runner="sync"
+        runner="async"
     )
     master.run()

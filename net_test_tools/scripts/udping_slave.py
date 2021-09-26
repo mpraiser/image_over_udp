@@ -48,11 +48,11 @@ def udping_slave(
         no_echo: bool
 ):
     echo = not no_echo
-    slave = udping.slave.Slave()
+    slave = udping.slave.UdpingSlave(
+        local, remote, echo=echo
+    )
     try:
-        slave.run(
-            local, remote, echo=echo
-        )
+        slave.run()
     except KeyboardInterrupt:
         pass
     print(f"total = {slave.result[-1].seq + 1}, loss = {slave.loss:.2%}")
