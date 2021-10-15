@@ -81,3 +81,7 @@ The topic udping includes `udping-master` and `udping-slave`, which should be us
     1. If `-ne` is not set, `--remote` must be set. It's where slave relays to.
 
 Note that master and slave should have same `--no_echo`/`-ne` option.
+
+## Known issues
+
+- aync mode (udping-master with -ne) doesn't work properly with very short intervals under Powershell.

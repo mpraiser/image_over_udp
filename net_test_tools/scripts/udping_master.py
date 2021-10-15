@@ -54,15 +54,8 @@ from net_test_tools.topic import udping
 @click.option(
     "--no_echo", "-ne",
     type=bool,
-    help="Only to transmit, not to deal with receive. If set, interval lower than 0.1 is acceptable.",
-    default=False,
-    show_default=True,
-    is_flag=True
-)
-@click.option(
-    "--sync", "-s",
-    type=bool,
-    help="Synchronous transmission. it will disable receiving.",
+    help="Only to transmit, not to deal with receive. If set, interval lower than 0.1 is acceptable. "
+         "In -ne, udping will work in synchronous mode, otherwise asynchronous.",
     default=False,
     show_default=True,
     is_flag=True
@@ -70,15 +63,14 @@ from net_test_tools.topic import udping
 def udping_master(
         local: tuple[str, int], remote: tuple[str, int],
         packet_size: int, n_packet: int, random_size: bool,
-        interval: float, complex_interval: tuple[int, float], no_echo: bool,
-        sync: bool
+        interval: float, complex_interval: tuple[int, float], no_echo: bool
 ):
     tx_only = no_echo
     interval = complex_interval if len(complex_interval) > 0 else ((1, interval),)
     print(f"interval is: {interval}")
     if n_packet <= 0:
         n_packet = None
-    runner = "sync" if sync else "async"
+    runner = "sync" if no_echo else "async"
     master = udping.master.UdpingMaster(
         local, remote,
         packet_size, n_packet,
